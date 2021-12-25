@@ -2,10 +2,10 @@
   <div class="container full-height">
     <div class="columns full-height">
       <div class="column full-height">
-        <InputModal />
+        <InputModal @content="onInput" />
       </div>
       <div class="column full-height">
-        <textarea v-model="prettyOutput" class="input textarea" />
+        <OutputModal :name="inputFile.name" :content="inputFile.content" />
       </div>
     </div>
   </div>
@@ -14,10 +14,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import InputModal from '@/components/InputModal.vue'
-
-import NullifyConverter from '@/converters/custom/nullify'
-import { StandCustomVehicle } from './converters/Stand'
-const data = '<Object0>  <posx>0</posx>  <posy>-5</posy>  <posz>-3</posz>  <pitch>0</pitch>  <yaw>0</yaw>  <roll>0</roll>  <visible>1</visible>  <hash>243282660</hash> </Object0> <Object1>  <posx>0</posx>  <posy>-17</posy>  <posz>-3</posz>  <pitch>0</pitch>  <yaw>0</yaw>  <roll>0</roll>  <visible>1</visible>  <hash>243282660</hash> </Object1> <Object2>  <posx>0</posx>  <posy>-28</posy>  <posz>-3</posz>  <pitch>0</pitch>  <yaw>0</yaw>  <roll>0</roll>  <visible>1</visible>  <hash>243282660</hash> </Object2> <Object3>  <posx>0</posx>  <posy>-4</posy>  <posz>5</posz>  <pitch>0</pitch>  <yaw>0</yaw>  <roll>0</roll>  <visible>1</visible>  <hash>243282660</hash> </Object3> <Base>  <count>5</count>  <basehash>-233098306</basehash> </Base> <Object4>  <posx>0</posx>  <posy>-14</posy>  <posz>5</posz>  <pitch>0</pitch>  <yaw>0</yaw>  <roll>0</roll>  <visible>1</visible>  <hash>243282660</hash> </Object4>'
+import OutputModal from '@/components/OutputModal.vue'
 
 interface VueData {
   inputFile: {
@@ -29,7 +26,8 @@ interface VueData {
 export default defineComponent({
   name: 'App',
   components: {
-    InputModal
+    InputModal,
+    OutputModal
   },
   data (): VueData {
     return {
@@ -40,13 +38,12 @@ export default defineComponent({
     }
   },
   methods: {
-  },
-  computed: {
-    output (): StandCustomVehicle | null {
-      return this.inputFile.content ? NullifyConverter(this.inputFile.content) : null
-    },
-    prettyOutput (): string {
-      return JSON.stringify(this.output, null, 2)
+    onInput (data: unknown) {
+      console.log('inp[', data)
+      this.inputFile = data as {
+        name: string | null,
+        content?: string | null
+      }
     }
   }
 })

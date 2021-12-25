@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'valid-v-model': 'off'
+    'valid-v-model': 'off',
+    'vue/no-textarea-mustache': 'off'
   }
 }
