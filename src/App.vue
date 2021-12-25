@@ -39,7 +39,6 @@ export default defineComponent({
   },
   methods: {
     onInput (data: unknown) {
-      console.log('inp[', data)
       this.inputFile = data as {
         name: string | null,
         content?: string | null

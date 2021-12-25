@@ -1,7 +1,7 @@
 import Converter, { XMLNode } from '../Converter'
 import { VERSION, StandCustomVehicle, Entity } from '../Stand'
 
-interface NullifyXMLObject {
+export interface NullifyXMLObject {
   posx: XMLNode
   posy: XMLNode
   posz: XMLNode
@@ -12,16 +12,14 @@ interface NullifyXMLObject {
   hash: XMLNode
 }
 
-type NullifyXMLVehicle = Record<string, NullifyXMLObject> & {
+export type NullifyXMLVehicle = Record<string, NullifyXMLObject> & {
   Base: {
     count: XMLNode,
     basehash: XMLNode
   },
 }
 
-export default function (inputString: string): StandCustomVehicle {
-  const converter = new Converter()
-  const data = (converter.fromXML(`<root>${inputString}</root>`).root) as NullifyXMLVehicle
+export default function (data: NullifyXMLVehicle): StandCustomVehicle {
   const objects: Entity[] = Object.keys(data)
     .filter(key => key.startsWith('Object'))
     .map(key => {

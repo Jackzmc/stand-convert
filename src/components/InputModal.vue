@@ -71,7 +71,6 @@ export default defineComponent({
     },
     onFileChange (event: Event) {
       // TODO: Figure out the logic for file
-      // console.log(target.files[0])
       const target = event.target as HTMLInputElement
       if (target && target.files) {
         this.addFile(target.files[0])

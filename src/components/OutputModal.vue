@@ -2,21 +2,31 @@
 <div class="full-height">
   <textarea readonly class="input textarea readonly" style="height:90%">{{ prettyOutput }}</textarea>
   <br>
-  <div class="field has-addons">
-    <div class="control">
-      <input type="text" class="input" v-model="replacedName" />
+  <div class="columns">
+    <div class="column">
+      <div class="field has-addons">
+        <div class="control">
+          <input type="text" class="input" v-model="replacedName" />
+        </div>
+        <div class="control">
+          <a class="button is-info" @click="download">Download</a>
+        </div>
+      </div>
     </div>
-    <div class="control">
-      <a class="button is-info" @click="download">Download</a>
+    <div class="column is-4">
+      <p class="is-pulled-right" v-if="output">
+        <b>Detected Source:</b> {{output.type}}
+      </p>
     </div>
   </div>
 </div>
 </template>
 
 <script lang="ts">
-import { StandCustomVehicle } from '@/converters/Stand.js'
 import { defineComponent } from 'vue'
-import NullifyConverter from '@/converters/custom/nullify'
+import Converter, { ConvertResult } from '../converters/Converter'
+
+const converter = new Converter()
 
 export default defineComponent({
   name: 'Output-Modal',
@@ -31,24 +41,27 @@ export default defineComponent({
   },
   methods: {
     download () {
-      if (!this.output) return
+      if (!this.output || !this.replacedName) return
       downloadFile(this.replacedName, this.output)
     }
   },
   computed: {
-    output (): StandCustomVehicle | null {
-      return this.content ? NullifyConverter(this.content) : null
+    output (): ConvertResult | null{
+      if (!this.content) return null
+
+      return converter.convert(this.content)
     },
     prettyOutput (): string {
       if (!this.output) return ''
 
       try {
-        return JSON.stringify(this.output, null, 2)
+        return JSON.stringify(this.output.vehicle, null, 2)
       } catch (err) {
         return (err as Error).message
       }
     },
     replacedName () {
+      if (!this.content) return null
       if (this.overwriteName) return this.overwriteName
       if (!this.name) return `stand-vehicle-${Date.now()}.json`
 
