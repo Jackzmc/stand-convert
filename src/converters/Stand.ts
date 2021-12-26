@@ -1,6 +1,7 @@
 /* eslint-disable no-use-before-define */
 
-export const VERSION = 'Jackz Custom Vehicle 1.0.0'
+export const CUSTOM_VEHICLE_VERSION = 'Jackz Custom Vehicle 1.0.0'
+export const VEHICLE_VERSION = 'JSTAND 1.3'
 
 export interface StandCustomVehicle {
   version: string;
@@ -27,6 +28,37 @@ export interface BaseVehicle {
   savedata?: StandVehicle;
 }
 
+export enum Mod {
+  'Spoilers' = 1,
+  'Front Bumper' = 2,
+  'Rear Bumper' = 3,
+  'Side Skirt' = 4,
+  'Exhaust' = 5,
+  'Frame' = 6,
+  'Grille' = 7,
+  'Hood' = 8,
+  'Fender' = 9,
+  'Right Fender' = 10,
+  'Roof' = 11,
+  'Engine' = 12,
+  'Brakes' = 13,
+  'Transmission' = 14,
+  'Horns' = 15,
+  'Suspension' = 16,
+  'Armor' = 17,
+  'Wheels Design' = 24,
+  'Motorcycle Back Wheel Design' = 25,
+  'Plate Holders' = 26,
+  'Trim Design' = 28,
+  'Ornaments' = 29,
+  'Dial Design' = 31,
+  'Steering Wheel' = 34,
+  'Shifter Leavers' = 35,
+  'Plaques' = 36,
+  'Hydraulics' = 39,
+  'Livery' = 49,
+}
+
 export interface StandVehicle {
   Livery: {
     Count: number;
@@ -36,21 +68,20 @@ export interface StandVehicle {
   Name: string;
   'Window Tint': number;
   'Interior Color': number;
-  Mods: Mods;
+  Mods: StandMods;
   'Engine Running': boolean;
-  Manufacturer: string;
-  Type: string;
+  Manufacturer?: string;
+  Type?: string;
   Colors: {
     Extras: Extras;
     Vehicle: VehicleColor;
     'Paint Fade': number;
-    Primary: Primary;
+    Primary: PaintColor | PaintColorCustom;
     'Color Combo': number;
-    Secondary: Primary;
+    Secondary: PaintColor | PaintColorCustom;
   };
-  Format: string;
+  Format?: string;
   Model: number;
-  Extras: Record<string, boolean>;
   'Bulletproof Tires': boolean;
   'Dashboard Color': number;
   Lights: {
@@ -64,6 +95,15 @@ export interface StandVehicle {
   'Tire Smoke': CustomColor;
 }
 
+enum StandExtras {
+  UNK17 = 17,
+  'Turbo Turning' = 18,
+  UNK19 = 19,
+  'Tire Smoke' = 20,
+  UNK21 = 21,
+  'Xenon Headlights' = 22
+}
+
 interface Neon {
   Color: CustomColor;
   Right: boolean;
@@ -72,9 +112,15 @@ interface Neon {
   Left: boolean;
 }
 
-interface Primary {
-  'Custom Color': CustomColor;
-  Custom: boolean;
+interface PaintColor {
+  Custom: boolean,
+  'Paint Type': number,
+  'Color': number,
+  'Pearlescent Color'?: number,
+}
+
+interface PaintColorCustom extends PaintColor {
+  'Custom Color'?: CustomColor,
 }
 
 interface CustomColor {
@@ -96,34 +142,6 @@ interface Extras {
   wheel: number;
 }
 
-interface Mods {
-  'Motorcycle Back Wheel Design': number;
-  Horns: number;
-  Engine: number;
-  'Dial Design': number;
-  Brakes: number;
-  Transmission: number;
-  'Trim Design': number;
-  Hood: number;
-  Plaques: number;
-  Fender: number;
-  'Steering Wheel': number;
-  Ornaments: number;
-  'Shifter Leavers': number;
-  Toggles: Record<string, boolean>;
-  Exhaust: number;
-  'Front Bumper': number;
-  Hydraulics: number;
-  Roof: number;
-  Livery: number;
-  Armor: number;
-  'Rear Bumper': number;
-  Grille: number;
-  Frame: number;
-  Suspension: number;
-  'Right Fender': number;
-  'Plate Holders': number;
-  'Side Skirt': number;
-  'Wheels Design': number;
-  Spoilers: number;
+export interface StandMods {
+  [key: string]: boolean | Record<string, boolean>
 }

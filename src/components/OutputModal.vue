@@ -9,24 +9,32 @@
           <input type="text" class="input" v-model="replacedName" />
         </div>
         <div class="control">
-          <a class="button is-info" @click="download">Download</a>
+          <a :class="['button','is-info']" @click="download">Download</a>
         </div>
       </div>
     </div>
     <div class="column is-4">
-      <p class="is-pulled-right" v-if="output">
-        <b>Detected Source:</b> {{output.type}}
+      <p class="is-pulled-right" v-if="source">
+        <b>Detected Source:</b> {{source}}
       </p>
     </div>
   </div>
+  <p>Place downloaded file in <b>%appdata%\Stand\Vehicles\Custom</b></p>
 </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import Converter, { ConvertResult } from '../converters/Converter'
+import Converter, { ConverterType } from '../converters/Converter'
+import { StandCustomVehicle, StandVehicle } from '../converters/Stand'
 
 const converter = new Converter()
+
+interface VueData {
+  overwriteName: string,
+  vehicleData: StandCustomVehicle | StandVehicle | null,
+  source: ConverterType | null
+}
 
 export default defineComponent({
   name: 'Output-Modal',
@@ -34,28 +42,37 @@ export default defineComponent({
     name: String,
     content: String
   },
-  data () {
+  data (): VueData {
     return {
-      overwriteName: ''
+      overwriteName: '',
+      vehicleData: null,
+      source: null
     }
   },
   methods: {
     download () {
-      if (!this.output || !this.replacedName) return
-      downloadFile(this.replacedName, this.output)
+      if (!this.vehicleData || !this.replacedName) return
+      downloadFile(this.replacedName, this.vehicleData)
+    }
+  },
+  watch: {
+    content: function () {
+      if (!this.content) return
+      const convert = converter.convert(this.content)
+      if (convert) {
+        this.source = convert.type
+        this.vehicleData = convert.vehicle
+      }
     }
   },
   computed: {
-    output (): ConvertResult | null{
-      if (!this.content) return null
-
-      return converter.convert(this.content)
-    },
     prettyOutput (): string {
-      if (!this.output) return ''
+      if (!this.vehicleData && this.content) {
+        return '<Invalid or unsupported input source>'
+      }
 
       try {
-        return JSON.stringify(this.output.vehicle, null, 2)
+        return JSON.stringify(this.vehicleData, null, 2)
       } catch (err) {
         return (err as Error).message
       }

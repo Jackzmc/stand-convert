@@ -1,0 +1,17 @@
+[
+    {
+        "version": "1.1.0",
+        "notes": [
+            "Add support for menyoo vehicles",
+            "Add info if format is unsupported"
+        ]
+    },
+    {
+        "version": "1.0.0",
+        "notes": [
+            "Initial release",
+            "Menyoo vehicles picks the first valid vehicle to be set as base",
+            "Menyoo vehicles customizations may have incorrect configuration"
+        ]
+    }
+]

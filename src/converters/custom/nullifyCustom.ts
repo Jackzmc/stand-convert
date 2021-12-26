@@ -1,5 +1,5 @@
 import Converter, { XMLNode } from '../Converter'
-import { VERSION, StandCustomVehicle, Entity } from '../Stand'
+import { CUSTOM_VEHICLE_VERSION, StandCustomVehicle, Entity } from '../Stand'
 
 export interface NullifyXMLObject {
   posx: XMLNode
@@ -40,7 +40,7 @@ export default function (data: NullifyXMLVehicle): StandCustomVehicle {
     })
 
   return {
-    version: VERSION,
+    version: CUSTOM_VEHICLE_VERSION,
     base: {
       invisible: false,
       model: parseInt(data.Base.basehash._text),

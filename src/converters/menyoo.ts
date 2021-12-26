@@ -1,9 +1,9 @@
 /* eslint-disable no-use-before-define */
-import Converter, { XMLNode } from '../Converter'
-import { VERSION, StandCustomVehicle, Vector3, Entity } from '../Stand'
+import Converter, { XMLNode } from './Converter'
+import { CUSTOM_VEHICLE_VERSION, VEHICLE_VERSION, StandCustomVehicle, Vector3, Entity, StandVehicle, StandMods, Mod } from './Stand'
 
 /* eslint-disable camelcase */
-export interface MenyooXML {
+export interface MenyooCustomXML {
   ClearDatabase: XMLNode;
   ClearWorld: XMLNode;
   ClearMarkers: XMLNode;
@@ -46,7 +46,7 @@ export interface Placement {
   Attachment: {
     _isAttached: XMLNode;
   }
-  VehicleProperties?: VehicleProperties;
+  VehicleProperties?: MenyooVehicleXML;
 }
 
 export interface ObjectProperties {
@@ -62,7 +62,7 @@ export interface PositionRotation {
   Yaw: XMLNode;
 }
 
-export interface VehicleProperties {
+export interface MenyooVehicleXML {
   Colours: Colours;
   Livery: XMLNode;
   NumberPlateText: XMLNode;
@@ -135,7 +135,7 @@ export interface TyresBursted {
   [id: string]: XMLNode
 }
 
-export default function (data: MenyooXML): StandCustomVehicle {
+export function convertCustomVehicle (data: MenyooCustomXML): StandCustomVehicle {
   let basePlacement: Placement | null = null
   const objects: Entity[] = []
   for (const placement of data.Placement) {
@@ -165,12 +165,97 @@ export default function (data: MenyooXML): StandCustomVehicle {
   }
 
   return {
-    version: VERSION,
+    version: CUSTOM_VEHICLE_VERSION,
     base: {
       invisible: false,
       model: parseInt(basePlacement.ModelHash._text, 16),
-      savedata: undefined
+      savedata: basePlacement.VehicleProperties
+        ? convertVehicle(basePlacement.VehicleProperties, basePlacement.HashName._text, parseInt(basePlacement.ModelHash._text, 16))
+        : undefined
     },
     objects
+  }
+}
+
+export function convertVehicle (data: MenyooVehicleXML, vehName: string, modelId: number): StandVehicle {
+  const Toggles: Record<string, boolean> = {}
+  const Mods: Record<string, number> = {}
+  for (const modId in data.Mods) {
+    const id = parseInt(modId[1])
+    const mod = Mod[id]
+    if (data.Mods[modId]._text === 'true' || data.Mods[modId]._text === 'false') {
+      Toggles[mod] = data.Mods[modId]._text === 'true'
+    } else {
+      Mods[mod] = parseInt(data.Mods[modId]._text)
+    }
+  }
+  return {
+    Format: VEHICLE_VERSION,
+    Model: modelId,
+    Colors: {
+      Primary: {
+        Custom: false,
+        'Paint Type': parseInt(data.Colours.Primary._text),
+        Color: parseInt(data.Colours.Primary._text),
+        'Pearlescent Color': parseInt(data.Colours.Pearl._text)
+      },
+      Secondary: {
+        Custom: false,
+        'Paint Type': parseInt(data.Colours.Primary._text),
+        Color: parseInt(data.Colours.Primary._text)
+      },
+      'Paint Fade': parseInt(data.PaintFade._text),
+      'Color Combo': -1,
+      Vehicle: {
+        // r:
+        Primary: parseInt(data.Colours.Primary._text),
+        Secondary: parseInt(data.Colours.Secondary._text),
+        r: 0,
+        g: 0,
+        b: 0
+      },
+      Extras: {
+        pearlescent: parseInt(data.Colours.Pearl._text),
+        wheel: parseInt(data.Colours.Rim._text)
+      }
+    },
+    Livery: {
+      Count: -1,
+      Style: -1
+    },
+    'Dirt Level': parseInt(data.DirtLevel._text),
+    Name: vehName,
+    'License Plate': {
+      Text: data.NumberPlateText._text,
+      Type: parseInt(data.NumberPlateIndex._text)
+    },
+    'Window Tint': parseInt(data.WindowTint._text),
+    'Bulletproof Tires': data.BulletProofTyres._text === 'true',
+    'Engine Running': data.EngineOn._text === 'true',
+    'Tire Smoke': {
+      r: parseInt(data.Colours.tyreSmoke_R._text),
+      g: parseInt(data.Colours.tyreSmoke_G._text),
+      b: parseInt(data.Colours.tyreSmoke_B._text)
+    },
+    'Interior Color': parseInt(data.Colours.LrInterior._text),
+    'Dashboard Color': parseInt(data.Colours.LrDashboard._text),
+    Lights: {
+      'Xenon Color': -1,
+      Neon: {
+        Left: data.Neons.Left._text === 'true',
+        Right: data.Neons.Right._text === 'true',
+        Front: data.Neons.Front._text === 'true',
+        Back: data.Neons.Back._text === 'true',
+        Color: {
+          r: parseInt(data.Neons.R._text),
+          g: parseInt(data.Neons.G._text),
+          b: parseInt(data.Neons.B._text)
+        }
+      }
+    },
+    Mods: {
+      ...Mods,
+      Toggles
+    }
   }
 }
