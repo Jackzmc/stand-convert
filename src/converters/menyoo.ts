@@ -148,9 +148,9 @@ export function convertCustomVehicle (data: MenyooCustomXML): StandCustomVehicle
       model: parseInt(placement.ModelHash._text, 16),
       name: placement.HashName._text,
       offset: {
-        x: parseFloat(placement.PositionRotation.X._text),
-        y: parseFloat(placement.PositionRotation.Y._text),
-        z: parseFloat(placement.PositionRotation.Z._text)
+        x: parseFloat(placement.PositionRotation.X._text) / 100,
+        y: parseFloat(placement.PositionRotation.Y._text) / 100,
+        z: parseFloat(placement.PositionRotation.Z._text) / 100
       },
       rotation: {
         x: parseFloat(placement.PositionRotation.Pitch._text),

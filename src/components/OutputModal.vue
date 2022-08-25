@@ -1,6 +1,6 @@
 <template>
 <div class="full-height">
-  <textarea readonly class="input textarea readonly" style="height:90%">{{ prettyOutput }}</textarea>
+  <textarea readonly class="input textarea readonly" style="height:90%" v-model="prettyOutput"></textarea>
   <br>
   <div class="columns">
     <div class="column">

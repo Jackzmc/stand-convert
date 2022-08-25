@@ -6,7 +6,9 @@ export const VEHICLE_VERSION = 'JSTAND 1.3'
 export interface StandCustomVehicle {
   version: string;
   base: BaseVehicle;
-  objects: Entity[];
+  objects?: Entity[];
+  vehicles?: StandVehicle[],
+  peds?: any[] // TODO: type
 }
 
 export interface Entity {
@@ -60,7 +62,7 @@ export enum Mod {
 }
 
 export interface StandVehicle {
-  Livery: {
+  Livery?: {
     Count: number;
     Style: number;
   };
@@ -75,15 +77,15 @@ export interface StandVehicle {
   Colors: {
     Extras: Extras;
     Vehicle: VehicleColor;
-    'Paint Fade': number;
+    'Paint Fade'?: number;
     Primary: PaintColor | PaintColorCustom;
-    'Color Combo': number;
+    'Color Combo'?: number;
     Secondary: PaintColor | PaintColorCustom;
   };
   Format?: string;
   Model: number;
   'Bulletproof Tires': boolean;
-  'Dashboard Color': number;
+  'Dashboard Color'?: number;
   Lights: {
     Neon: Neon;
     'Xenon Color': number;
@@ -138,7 +140,7 @@ interface VehicleColor {
 }
 
 interface Extras {
-  pearlescent: number;
+  pearlescent?: number;
   wheel: number;
 }
 

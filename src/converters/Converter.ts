@@ -1,7 +1,10 @@
 import { xml2json } from 'xml-js'
+import Ini from 'ini'
+
 import * as menyoo from './menyoo'
 import nullifyCustom, { NullifyXMLVehicle } from './custom/nullifyCustom'
-import { StandCustomVehicle, StandVehicle } from './Stand.js'
+import { StandCustomVehicle, StandVehicle } from './Stand'
+import iniCustom from './custom/iniCustom'
 
 export interface XMLNode {
   _text: string
@@ -9,7 +12,8 @@ export interface XMLNode {
 
 export enum ConverterType {
   Nullify = 'Nullify',
-  Menyoo = 'Menyoo'
+  Menyoo = 'Menyoo',
+  Ini = 'IniFile'
 }
 
 export interface ConvertResult {
@@ -23,13 +27,34 @@ export default class Converter {
   }
 
   convert (input: string): ConvertResult | null {
+    const xmlResult = this.convertXML(input)
+    if (xmlResult) return xmlResult
+
+    const iniResult = this.convertIni(input)
+    if (iniResult) return iniResult
+
+    return null
+  }
+
+  convertIni (input: string): ConvertResult | null {
+    const iniObject = Ini.parse(input)
+
+    const result = iniCustom(iniObject)
+    if (result) {
+      return {
+        vehicle: result,
+        type: ConverterType.Ini
+      }
+    }
+    return null
+  }
+
+  convertXML (input: string): ConvertResult | null {
     try {
       const xml = this.fromXML(`<root>${input}</root>`) as Record<string, Record<string, unknown>>
       if (xml.root.SpoonerPlacements) {
-        console.debug('is menyoo custom')
         return { vehicle: menyoo.convertCustomVehicle(xml.root.SpoonerPlacements as menyoo.MenyooCustomXML), type: ConverterType.Menyoo }
       } else if (xml.root.Vehicle) {
-        console.debug('is menyoo vehicle')
         const root = xml.root.Vehicle as Record<string, unknown | XMLNode>
         return {
           vehicle: menyoo.convertVehicle(
@@ -40,12 +65,12 @@ export default class Converter {
           type: ConverterType.Menyoo
         }
       } else if (xml.root.Base) {
-        console.debug('is nullify vehicle')
         return { vehicle: nullifyCustom(xml.root as NullifyXMLVehicle), type: ConverterType.Nullify }
       }
       return null
     } catch {
       // Is not valid xml
+
       return null
     }
   }

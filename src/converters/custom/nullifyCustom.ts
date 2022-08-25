@@ -1,4 +1,4 @@
-import Converter, { XMLNode } from '../Converter'
+import { XMLNode } from '../Converter'
 import { CUSTOM_VEHICLE_VERSION, StandCustomVehicle, Entity } from '../Stand'
 
 export interface NullifyXMLObject {
@@ -25,11 +25,11 @@ export default function (data: NullifyXMLVehicle): StandCustomVehicle {
     .map(key => {
       return {
         offset: {
-          x: parseFloat(data[key].posx._text),
-          y: parseFloat(data[key].posy._text),
-          z: parseFloat(data[key].posz._text)
+          x: parseFloat(data[key].posx._text) / 100,
+          y: parseFloat(data[key].posy._text) / 100,
+          z: parseFloat(data[key].posz._text) / 100
         },
-        model: parseInt(data[key].hash._text, 16),
+        model: parseInt(data[key].hash._text),
         name: undefined,
         rotation: {
           x: parseFloat(data[key].pitch._text),
